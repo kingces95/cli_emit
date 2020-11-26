@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
-source /dev/stdin < <(cli loader)
-source /dev/stdin < <(cli_util)
+source /dev/stdin < <(cli loader --library)
 
 EMIT_TAB="    "
-
-main() {
-    cli::export emit
-}
 
 emit::new_line() {
     echo
@@ -162,8 +157,8 @@ emit::if_empty() {
     emit::if "[[ -z \"\${$1}\" ]]"
 }
 
-initialize() {
-    util::initialize "$@"
+main() {
+    cli::export emit
 }
 
 cli::load "$@"
