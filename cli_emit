@@ -15,6 +15,10 @@ emit::comments() {
     sed 's/^/\# /'
 }
 
+emit::shebang() {
+    echo \#!/usr/bin/env bash
+}
+
 emit::file() {
     # emit content to include last 'pseudo' line
     # (see https://stackoverflow.com/a/12919766/2303356)
@@ -100,7 +104,7 @@ emit::case_raw() {
 }
 
 emit::case() {
-    emit::case "'$1'"
+    emit::case_raw "'$1'"
 }
 
 emit::case_default() {
@@ -155,6 +159,10 @@ emit::if() {
 
 emit::if_empty() {
     emit::if "[[ -z \"\${$1}\" ]]"
+}
+
+self_test() {
+    echo foo | emit::case 'a' | emit::case_statement 'x'
 }
 
 main() {
