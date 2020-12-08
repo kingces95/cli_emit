@@ -93,6 +93,16 @@ main() {
         emit::indented
         echo "done"
     }
+        
+    emit::function_contains() {
+        while read; do 
+            echo 'true' \
+                | emit::case_inline "${REPLY}"
+        done \
+        | cat - <(emit::case_default_inline false) \
+        | emit::case_statement '$1' \
+        | emit::function $1
+    }
 
     emit::case_statement() {
         echo "case \"$1\" in"
@@ -119,6 +129,10 @@ main() {
         echo "'$1') $REPLY ;;"
     }
 
+    emit::case_default_inline() {
+        echo "*) $1 ;;"
+    }
+    
     emit::case_noop() {
         echo "'$1') ;;"
     }
