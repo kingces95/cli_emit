@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source /dev/stdin < <(cli loader)
-source /dev/stdin < <(cli initialize)
-source /dev/stdin < <(cli export)
+cli::import cli initialize
+cli::import cli export
 
 main() {
     EMIT_TAB="    "
@@ -30,7 +30,7 @@ main() {
         done
     }
 
-    emit::indented() {
+    emit::indent() {
         local regex='<< ([A-Z]+)'
         local eof=
 
@@ -60,14 +60,37 @@ main() {
 
     emit::function() {
         echo "$1() {"
-        emit::indented
+        emit::indent
         echo "}"
     }
 
     emit::subproc() {
         echo "$1() ("
-        emit::indented
+        emit::indent
         echo ")"
+    }
+
+    emit::noop() {
+        echo ':'
+    }
+
+    emit::continuation() {
+        if ! read; then 
+            return
+        fi
+
+        echo -n "${REPLY}"
+
+        while read; do
+            echo ' \'
+            echo -n "${REPLY}"
+        done
+
+        echo
+    }
+
+    emit::process_substitution() {
+        echo "<($1)"
     }
 
     emit::shift() {
@@ -90,7 +113,7 @@ main() {
 
     emit::while() {
         echo "while $1; do"
-        emit::indented
+        emit::indent
         echo "done"
     }
         
@@ -106,13 +129,13 @@ main() {
 
     emit::case_statement() {
         echo "case \"$1\" in"
-        emit::indented
+        emit::indent
         echo "esac"
     }
 
     emit::case_raw() {
         echo "$1)"
-        emit::indented
+        emit::indent
         echo ";;" 
     }
 
@@ -170,7 +193,7 @@ main() {
 
     emit::if() {
         echo "if $1; then"
-        emit::indented
+        emit::indent
         echo "fi"
     }
 
