@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-source /dev/stdin < <(cli loader)
-cli::import cli initialize
-cli::import cli export
+source $(cli loader)
 
-main() {
+export() {
     EMIT_TAB="    "
 
     emit::new_line() {
@@ -12,6 +10,18 @@ main() {
 
     emit::comment() {
         echo "# $1"
+    }
+
+    emit::header() {
+        if ! read -r; then
+            return
+        fi
+
+        echo
+        emit::comment "$1"
+        echo "${REPLY}"
+
+        while read -r; do echo "${REPLY}"; done
     }
 
     emit::comments() {
@@ -75,13 +85,13 @@ main() {
     }
 
     emit::continuation() {
-        if ! read; then 
+        if ! read -r; then 
             return
         fi
 
         echo -n "${REPLY}"
 
-        while read; do
+        while read -r; do
             echo ' \'
             echo -n "${REPLY}"
         done
@@ -107,6 +117,18 @@ main() {
         emit::declare -g $1 "${2-}"
     }
 
+    emit::declare_global_array() {
+        echo "declare -ga $1=()"
+    }
+
+    emit::declare_global_map() {
+        echo "declare -gA $1=()"
+    }
+
+    emit::map_set() {
+        echo "$1[$2]=\"$3\""
+    }
+
     emit::variable_required() {
         echo ": \${$1?$2}"
     }
@@ -116,9 +138,17 @@ main() {
         emit::indent
         echo "done"
     }
+
+    emit::break() {
+        echo 'break'
+    }
+
+    emit::continue() {
+        echo 'continue'
+    }
         
     emit::function_contains() {
-        while read; do 
+        while read -r; do 
             echo 'true' \
                 | emit::case_inline "${REPLY}"
         done \
@@ -148,7 +178,7 @@ main() {
     }
 
     emit::case_inline() {
-        read
+        read -r
         echo "'$1') $REPLY ;;"
     }
 
@@ -175,7 +205,7 @@ main() {
 
     emit::inline() {
         local delimiter=
-        while read; do
+        while read -r; do
             echo -n "${delimiter}${REPLY}"
             delimiter='; '
         done
