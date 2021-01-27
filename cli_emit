@@ -199,7 +199,7 @@ export() {
     }
 
     emit::error() {
-        echo echo \""$1"\" '>&2'
+        echo echo \""$@"\" '>&2'
         echo "exit 1"
     }
 
