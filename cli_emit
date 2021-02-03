@@ -238,4 +238,4 @@ export() {
     cli::export emit
 }
 
-cli::load "$@"
+cli::main "$@"
