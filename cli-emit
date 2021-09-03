@@ -82,7 +82,7 @@ main() {
         echo "}"
     }
 
-    emit::subproc() {
+    emit::subshell() {
         echo "$1() ("
         emit::indent
         echo ")"
@@ -182,20 +182,13 @@ main() {
     emit::declare::map() {
         echo "("
         while read key value; do
-            echo "[$key]=$(emit::literal "${value}")" | emit::indent
+            echo "['$key']=$(emit::literal "${value}")" | emit::indent
         done
         echo ")"   
     }
 
     emit::literal() {
-        local ARRAY=( "$*" )
-        local LITERAL=$(declare -p ARRAY)
-
-        # 0123456789012345678901
-        # declare -a ARRAY=([0]="foo")
-        LITERAL="${LITERAL:22}"
-        LITERAL="${LITERAL:0: -1}"
-        echo "${LITERAL}"
+        cli::literal "$*"
     }
 
     emit::map_set() {
