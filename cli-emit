@@ -265,7 +265,7 @@ main() {
         echo "exit 1"
     }
 
-    emit::inline() {
+    emit() {
         local delimiter=
         while read -r; do
             echo -n "${delimiter}${REPLY}"
